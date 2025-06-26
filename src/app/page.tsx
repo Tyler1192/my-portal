@@ -1,103 +1,176 @@
-import Image from "next/image";
+'use client';
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <>
+      <header className="l-header">
+        <div className="l-mainVisual">
+          <div className="l-mainVisual__in">
+            <h1>
+              <img
+                src="/header2.png"
+                className="c-mainVisual__img"
+                width={1000}
+                height={170}
+                alt="サービスのヘッダー"
+              />
+            </h1>
+          </div>
         </div>
+      </header>
+
+      <div className="l-menu">
+        <ul className="l-menu__list">
+          <li className="l-menu__item">
+            <a href="/about">
+              <img src="/icons/about.png" alt="このサイトについて" className="menu-icon" />
+              このサイトについて
+            </a>
+          </li>
+          <li className="l-menu__item">
+            <a href="/flowchart-howto">
+              <img src="/icons/flowchart-howto.png" alt="関連図作成の使い方" className="menu-icon" />
+              関連図作成の使い方
+            </a>
+          </li>
+          <li className="l-menu__item">
+            <a href="/report-howto">
+              <img src="/icons/report-howto.png" alt="アセスメントAIの使い方" className="menu-icon" />
+              アセスメントAIの使い方
+            </a>
+          </li>
+          <li className="l-menu__item">
+            <a href="/bbs">
+              <img src="/icons/bbs.png" alt="掲示板" className="menu-icon" />
+              掲示板
+            </a>
+          </li>
+          <li className="l-menu__item">
+            <a href="/goods">
+              <img src="/icons/goods.png" alt="新着情報" className="menu-icon" />
+              新着情報
+            </a>
+          </li>
+          <li className="l-menu__item">
+            <a href="/flowchart">
+              <img src="/icons/flowchart.png" alt="関連図作成" className="menu-icon" />
+              関連図作成
+            </a>
+          </li>
+          <li className="l-menu__item">
+            <a href="/report-generator">
+              <img src="/icons/report.png" alt="アセスメント自動作成AI" className="menu-icon" />
+              アセスメント自動作成AI
+            </a>
+          </li>
+          <li className="l-menu__item">
+            <a href="/contact">
+              <img src="/icons/contact.png" alt="お問い合わせ" className="menu-icon" />
+              お問い合わせ
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <main className="l-content">
+        <h2>課題をもっとラクにしましょう！</h2>
+        <p>
+          このサイトでは、関連図作成ツールと、アセスメント自動作成AIを提供しています
+          使い方ページもご用意しているので、初めての方でも安心してご利用いただけます
+        </p>
+        <p>
+          時間がかかる課題をサクッとこなして、自分の時間を作りましょう！
+        </p>
+        <p>　</p>
+        <p>
+          ※アセスメント自動作成AIは近日公開します
+        </p>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+      <style jsx>{`
+        .l-mainVisual {
+          background-color: #f0f8ff;
+          padding: 0;
+          margin: 0;
+          text-align: center;
+        }
+
+        .c-mainVisual__img {
+          display: block;
+          margin: 0 auto;
+          width: 100%;
+          max-width: 1600px;
+          height: auto;
+        }
+
+        .l-menu {
+          background-color: #f8f8f8;
+          padding: 20px 0;
+          border-top: 1px solid #ddd;
+        }
+
+        .l-menu__list {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+          list-style: none;
+          padding: 0;
+          margin: 0 auto;
+          max-width: 1200px;
+        }
+
+        .l-menu__item {
+          padding: 10px 15px;
+          background: white;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          font-size: 16px;
+          font-weight: bold;
+          text-align: center;
+          transition: background 0.2s;
+        }
+
+        .l-menu__item:hover {
+          background-color: #eef5ff;
+        }
+
+        .l-menu__item a {
+          text-decoration: none;
+          color: #333;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .menu-icon {
+          width: 48px;
+          height: 48px;
+          margin-bottom: 8px;
+        }
+
+        .l-content {
+          max-width: 720px;
+          margin: 40px auto;
+          padding: 40px;
+          font-size: 16px;
+          line-height: 1.8;
+          color: #333;
+        
+          background-color: #fff8dc; /* やさしいクリーム色（コーンシルク） */
+          border-radius: 12px;        /* 丸みのある角 */
+          box-shadow: 0 4px 8px rgba(255, 222, 173, 0.3); /* 明るい影で立体感 */
+        }
+        
+
+        .l-content h2 {
+          font-size: 24px;
+          margin-bottom: 16px;
+        }
+
+        .l-content p {
+          margin-bottom: 1em;
+        }
+      `}</style>
+    </>
   );
 }
