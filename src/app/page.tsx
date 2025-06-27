@@ -1,8 +1,15 @@
 'use client';
 
+import Head from 'next/head';
+
 export default function Home() {
   return (
     <>
+      <Head>
+        <title>関連図作成・アセスメント自動作成AI｜看護学生のための便利ツール</title>
+        <meta name="description" content="関連図作成ツールとアセスメントAIで作業時間を短縮しましょう" />
+      </Head>
+
       <header className="l-header">
         <div className="l-mainVisual">
           <div className="l-mainVisual__in">
