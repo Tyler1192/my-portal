@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import ReactFlow, {
   ReactFlowProvider,
@@ -11,14 +10,12 @@ import ReactFlow, {
   Position,
 } from 'reactflow';
 
-import { ResizableBox } from 'react-resizable';
 import 'reactflow/dist/style.css';
 
 
 // ✅ カスタムノード
 
 const handleSize = 1;
-const hitBoxSize = 20;
 
 const CustomNode = ({ id, data }) => {
   const [text, setText] = useState(data.label || '');
@@ -241,7 +238,7 @@ const CustomNode = ({ id, data }) => {
 
 
 //ここからフォークノード
-const ForkNode = ({ id, data }) => {
+const ForkNode = ({ id: _id, data }) => {
   const [expanded, setExpanded] = useState(true); // true: 大きく表示, false: 小さく表示
 
   const handleContextMenu = (e) => {
@@ -320,7 +317,7 @@ const ForkNode = ({ id, data }) => {
 };
 
 //ここから楕円ノード
-const EllipseNode = ({ id, data }) => {
+const EllipseNode = ({ id: _id, data }) => {
   const [text, setText] = useState(data.label || '');
   const [size, setSize] = useState({ width: 130, height: 60 }); // 楕円らしい初期サイズ
 
@@ -438,7 +435,7 @@ const EllipseNode = ({ id, data }) => {
 
 
 // ✅ 1. 点線ノードコンポーネントを追加
-const DashedNode = ({ id, data }) => {
+const DashedNode = ({ id: _id, data }) => {
   const [text, setText] = useState(data.label || '');
   const [size, setSize] = useState({ width: 120, height: 20 });
   const textRef = useRef(null);
@@ -558,7 +555,7 @@ const DashedNode = ({ id, data }) => {
 };
 
 //ここから点線楕円のノード
-const DashedEllipseNode = ({ id, data }) => {
+const DashedEllipseNode = ({ id: _id, data }) => {
   const [text, setText] = useState(data.label || '');
   const [size, setSize] = useState({ width: 130, height: 60 });
 
