@@ -23,6 +23,17 @@ export default function FlowchartHowTo() {
         <h2>関連図描画ツールの使い方</h2>
         <p>このページでは、関連図描画ツールの使い方を説明します。直感的な操作なので、説明を見なくても、とりあえず使ってみるのもありです</p>
         <p>使い方動画もあるので、文章が読むのが面倒くさい学生さんや、見た方が分かりやすい学生さんは、動画をご視聴ください</p>
+        <div className="video-container">
+          <iframe
+            width="100%"
+            height="400"
+            src="https://www.youtube.com/embed/I61gjxZj5N0"
+            title="YouTube video"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>        
         <p>　</p>
         <h3>ステップ1：ノードを追加する</h3>
         <p>　</p>

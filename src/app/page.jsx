@@ -48,8 +48,8 @@ export default function Home() {
           </li>
           <li className="l-menu__item">
             <a href="/bbs">
-              <img src="/icons/bbs.png" alt="掲示板" className="menu-icon" />
-              掲示板
+              <img src="/icons/bbs.png" alt="予約" className="menu-icon" />
+              予約
             </a>
           </li>
           <li className="l-menu__item">
