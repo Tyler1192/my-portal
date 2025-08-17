@@ -11,7 +11,7 @@ export async function GET() {
   try {
     const file = await fs.readFile(filePath, 'utf-8');
     existingData = JSON.parse(file);
-  } catch (err) {
+  } catch {
     existingData = [];
   }
 
@@ -78,7 +78,7 @@ export async function POST(req) {
     await fs.writeFile(filePath, JSON.stringify(reservations, null, 2), 'utf-8');
 
     return NextResponse.json({ password }); // 成功時
-  } catch (err) {
+  } catch {
     return NextResponse.json({ message: '予約処理中にエラーが発生しました' }, { status: 500 });
   }
 }
