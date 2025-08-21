@@ -1,8 +1,11 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export default function CompletePage() {
+// これでプリレンダーを抑止（ビルド時のエクスポートエラー回避）
+export const dynamic = 'force-dynamic';
+
+function CompleteInner() {
   const sp = useSearchParams();
   const slot = sp.get('slot');
   const mid  = sp.get('mid');
@@ -22,7 +25,6 @@ export default function CompletePage() {
         });
         const d = await r.json();
         if (d.status === 'COMPLETED') {
-          // 本物成功 → 予約確定APIへ
           const rr = await fetch('/api/paypay/confirm?mid=' + encodeURIComponent(mid) + '&slot=' + encodeURIComponent(slot));
           const dd = await rr.json();
           if (dd?.status === 'COMPLETED' && dd?.password) {
@@ -71,5 +73,13 @@ export default function CompletePage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function CompletePage() {
+  return (
+    <Suspense fallback={<main className="p-6 max-w-2xl mx-auto"><p>読み込み中…</p></main>}>
+      <CompleteInner />
+    </Suspense>
   );
 }
