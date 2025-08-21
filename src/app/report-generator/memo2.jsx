@@ -1,4 +1,4 @@
-//本物
+//パスワード固定
 'use client';
 
 import { useState, useEffect } from 'react'; 
@@ -99,7 +99,7 @@ export default function ReportGenerator() {
   
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">レポート自動生成</h1>
+      <h1 className="text-2xl font-bold mb-4">11の機能的健康パターン</h1>
       <textarea
         id="inputText"
         rows="10"

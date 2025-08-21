@@ -1,3 +1,4 @@
+//本物
 'use client';
 
 import { useState } from 'react';
@@ -108,7 +109,7 @@ export default function Step3Page() {
   
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">枠組みごとの解釈・考察</h1>
+      <h1 className="text-2xl font-bold mb-4">枠組みごとの考察（GPT-4 Turbo）</h1>
 
       <textarea
         value={inputText}
