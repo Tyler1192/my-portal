@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import PAYPAY from '../../../../lib/paypay';         // ラッパの実体に合わせる
-import prisma from '../../../../lib/prisma';         // 相対パス注意
 export const dynamic = 'force-dynamic';
 
 export async function POST(req) {
