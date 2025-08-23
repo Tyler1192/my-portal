@@ -63,6 +63,9 @@ export async function POST(req) {
       `${base.replace(/\/+$/, '')}/paypay/complete` +
       `?slot=${encodeURIComponent(slot)}&mid=${encodeURIComponent(merchantPaymentId)}`;
 
+    console.log('[paypay/create] mid=%s slot=%s redirectUrl=%s',
+      merchantPaymentId, slot, redirectUrl);      
+
     // PayPayへ作成リクエスト
     const payload = {
       merchantPaymentId,
