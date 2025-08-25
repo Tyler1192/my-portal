@@ -1,5 +1,6 @@
+// src/app/api/paypay/status/route.js
 import { NextResponse } from 'next/server';
-import PAYPAY from '../../../../lib/paypay';         // ラッパの実体に合わせる
+import PAYPAY from '../../../../lib/paypay'; // ラッパの実体に合わせる
 export const dynamic = 'force-dynamic';
 
 export async function POST(req) {
@@ -9,14 +10,17 @@ export async function POST(req) {
       return NextResponse.json({ error: 'merchantPaymentId_required' }, { status: 400 });
     }
 
-    // PayPayのステータス照会（あなたのラッパに合わせて呼び出し）
-    // 例: GetCodePaymentDetails([mid]) でOK（あなたの既存コードに合わせています）
+    // PayPayのステータス照会（あなたのラッパに合わせて）
     const resp = await PAYPAY.GetCodePaymentDetails([merchantPaymentId]);
     const body = resp?.BODY || {};
     const status = body?.data?.status || body?.resultInfo?.status || 'UNKNOWN';
 
-    // 参考：ここでDBの補助判定（あってもなくても可）
-    // const row = await prisma.reservation.findFirst({ where: { merchantPaymentId }, select: { reserved: true } });
+    // ★ 証跡用ログ（保存したら後で削除してOK）
+    console.log('[paypay/status]', JSON.stringify({
+      mid: merchantPaymentId,
+      status,
+      at: new Date().toISOString(),
+    }));
 
     return NextResponse.json({ status });
   } catch (e) {
