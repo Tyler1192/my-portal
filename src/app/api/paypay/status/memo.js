@@ -1,8 +1,6 @@
-//ユーザー視点模擬はこれで成功
-// src/app/api/paypay/status/route.js
+//最終チェックこれで成功
 import { NextResponse } from 'next/server';
-import prisma from '../../../../lib/prisma';
-
+import PAYPAY from '../../../../lib/paypay';         // ラッパの実体に合わせる
 export const dynamic = 'force-dynamic';
 
 export async function POST(req) {
@@ -12,18 +10,16 @@ export async function POST(req) {
       return NextResponse.json({ error: 'merchantPaymentId_required' }, { status: 400 });
     }
 
-    // そのIDが予約に紐づいていれば状態を返す（簡易ポーリング用）
-    const row = await prisma.reservation.findFirst({
-      where: { merchantPaymentId },
-      select: { reserved: true }
-    });
+    // PayPayのステータス照会（あなたのラッパに合わせて呼び出し）
+    // 例: GetCodePaymentDetails([mid]) でOK（あなたの既存コードに合わせています）
+    const resp = await PAYPAY.GetCodePaymentDetails([merchantPaymentId]);
+    const body = resp?.BODY || {};
+    const status = body?.data?.status || body?.resultInfo?.status || 'UNKNOWN';
 
-    if (!row) {
-      // まだconfirmされていない想定
-      return NextResponse.json({ status: 'PENDING' });
-    }
+    // 参考：ここでDBの補助判定（あってもなくても可）
+    // const row = await prisma.reservation.findFirst({ where: { merchantPaymentId }, select: { reserved: true } });
 
-    return NextResponse.json({ status: row.reserved ? 'COMPLETED' : 'PENDING' });
+    return NextResponse.json({ status });
   } catch (e) {
     console.error('status error:', e);
     return NextResponse.json({ error: 'status_failed', detail: String(e?.message ?? e) }, { status: 500 });

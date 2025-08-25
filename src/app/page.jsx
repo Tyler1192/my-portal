@@ -90,10 +90,20 @@ export default function Home() {
         </p>
         <p>　</p>
         <p>
-          ※アセスメント自動作成AIは近日公開します
+          本サービスを使えば、6時間の課題も10分で終わります！
         </p>
       </main>
-
+      
+      <footer className="l-footer">
+        <nav className="l-footer__nav">
+          <a href="/legal/tokushoho">特定商取引法に基づく表記</a>
+          <a href="/privacy">プライバシーポリシー</a>
+          <a href="/terms">利用規約</a>
+          <a href="/refund">返品・キャンセルポリシー</a>
+        </nav>
+        <small>© {new Date().getFullYear()} 医療サービスSynaplus</small>
+      </footer>
+      
       <style jsx>{`
         .l-mainVisual {
           background-color: #f0f8ff;
@@ -177,6 +187,21 @@ export default function Home() {
         .l-content p {
           margin-bottom: 1em;
         }
+
+        //以下フッター
+
+        .l-footer {
+          border-top: 1px solid #eee;
+          padding: 24px 16px;
+          background: #fafafa;
+          text-align: center;
+        }
+        .l-footer__nav {
+          display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+          margin-bottom: 8px;
+        }
+        .l-footer__nav a { color: #333; text-decoration: none; }
+        .l-footer__nav a:hover { text-decoration: underline; }          
       `}</style>
     </>
   );

@@ -25,6 +25,16 @@ export default function FlowchartHowTo() {
         <p>　</p> 
       </main>
 
+      <footer className="l-footer">
+        <nav className="l-footer__nav">
+          <a href="/legal/tokushoho">特定商取引法に基づく表記</a>
+          <a href="/privacy">プライバシーポリシー</a>
+          <a href="/terms">利用規約</a>
+          <a href="/refund">返品・キャンセルポリシー</a>
+        </nav>
+        <small>© {new Date().getFullYear()} 医療サービスSynaplus</small>
+      </footer>
+
       <style jsx>{`
         .l-mainVisual {
           background-color: #f0f8ff;
@@ -106,6 +116,20 @@ export default function FlowchartHowTo() {
           border-radius: 8px;
           box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }        
+
+        .l-footer {
+          border-top: 1px solid #eee;
+          padding: 24px 16px;
+          background: #fafafa;
+          text-align: center;
+        }
+        .l-footer__nav {
+          display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+          margin-bottom: 8px;
+        }
+        .l-footer__nav a { color: #333; text-decoration: none; }
+        .l-footer__nav a:hover { text-decoration: underline; }   
+                
       `}</style>
     </>
   );
