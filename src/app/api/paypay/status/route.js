@@ -15,13 +15,6 @@ export async function POST(req) {
     const body = resp?.BODY || {};
     const status = body?.data?.status || body?.resultInfo?.status || 'UNKNOWN';
 
-    // ★ 証跡用ログ（保存したら後で削除してOK）
-    console.log('[paypay/status]', JSON.stringify({
-      mid: merchantPaymentId,
-      status,
-      at: new Date().toISOString(),
-    }));
-
     return NextResponse.json({ status });
   } catch (e) {
     console.error('status error:', e);
