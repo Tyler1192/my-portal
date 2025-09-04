@@ -36,7 +36,7 @@ export default function FlowchartHowTo() {
         <p>有料版のChat GPTは記憶力はクリアしていますが、看護用のAIではないので、求めるような答えはくれません</p>
         <p>その点、私のアセスメント自動作成AIは、Chat GPTよりも安く、高い精度でアセスメントを行えます</p>
         <p>患者から聞いた情報やペーパーペイシェントの情報をコピペして、実行ボタンを押すと項目ごとに振り分けて、評価までしてくれます</p>
-        <p>アセスメントはとても大変な課題でAIの処理量が多いため４５０円だけ取らせていただきます🙇</p>
+        <p>アセスメントはとても大変な課題でAIの処理量が多いため５００円だけ取らせていただきます🙇</p>
         <p>関連図作成は無料なのですが、アセスメントAIは無料にすると私が赤字になってしまいますので、ご理解お願いします</p>
         <p>　</p> 
         <h3>関連図描画ツール</h3>
@@ -47,6 +47,16 @@ export default function FlowchartHowTo() {
         <p>また、今後はアセスメントAIと連携することで、関連図も自動で作ってしまおう！と企画しているのでご期待お願いします</p>
         <img src="/images/plus-comp.png" alt="完成" className="ex-image-f" width="500" />          
       </main>
+      
+      <footer className="l-footer">
+        <nav className="l-footer__nav">
+          <a href="/legal/tokushoho">特定商取引法に基づく表記</a>
+          <a href="/privacy">プライバシーポリシー</a>
+          <a href="/terms">利用規約</a>
+          <a href="/refund">返品・キャンセルポリシー</a>
+        </nav>
+        <small>© {new Date().getFullYear()} 医療サービスSynaplus</small>
+      </footer>
 
       <style jsx>{`
         .l-mainVisual {
@@ -111,6 +121,18 @@ export default function FlowchartHowTo() {
           margin-bottom: 1em;
         }
         
+        .l-footer {
+          border-top: 1px solid #eee;
+          padding: 24px 16px;
+          background: #fafafa;
+          text-align: center;
+        }
+        .l-footer__nav {
+          display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+          margin-bottom: 8px;
+        }
+        .l-footer__nav a { color: #333; text-decoration: none; }
+        .l-footer__nav a:hover { text-decoration: underline; }           
       `}</style>
     </>
   );

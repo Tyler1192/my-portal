@@ -36,7 +36,7 @@ export default function FlowchartHowTo() {
         <p>予約した30分間しかAIを使用することができないので、必ず予定が空いていることを確認しておいてください。</p>
         <img src="/images/02reservepage2.png" alt="予約ページの写真2" className="ex-image-a" />
         <p>　</p> 
-        <p>「予約してパスワードを取得」ボタンをクリックするとPayPayで利用料（450円）を払うことができます。</p>
+        <p>「予約してパスワードを取得」ボタンをクリックするとPayPayで利用料（500円）を払うことができます。</p>
         <p>支払いが完了すると、下のようにパスワードが表示されます。</p>
         <img src="/images/02reservepage3.png" alt="予約ページの写真3" className="ex-image-a" />
         <p>　</p>                        
