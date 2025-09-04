@@ -74,6 +74,7 @@ export async function GET() {
     const keyUtcNoZ = toIsoMinuteUtcNoZ(t); // 例: "2025-09-05T03:30"（内部キー）
     const hit = map.get(keyUtcNoZ);
     return {
+      time: timeJst, 
       timeJst: toJstIsoMinute(t),   // 例: "2025-09-05T12:30" ← 画面表示＆POST用
       timeUtc: keyUtcNoZ,           // 例: "2025-09-05T03:30" ← 参考情報（使わなくてもOK）
       reserved: hit?.reserved ?? false,
