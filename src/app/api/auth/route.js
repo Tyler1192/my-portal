@@ -5,14 +5,18 @@ import prisma from '../../../lib/prisma';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// 現在のUTC時刻を 00分 or 30分に丸める
-function currentUtcSlotStart() {
+const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+// いまのJST時刻を 00/30 に丸めて → UTCのDateにして返す
+function currentJstSlotStartAsUtc() {
   const now = new Date();
-  const minutes = now.getUTCMinutes();
-  const slotMinutes = minutes < 30 ? 0 : 30;
-  const t = new Date(now);
-  t.setUTCMinutes(slotMinutes, 0, 0); // 秒・ミリ秒までゼロ
-  return t;
+  const jstNow = new Date(now.getTime() + JST_OFFSET_MS);
+  jstNow.setSeconds(0, 0);
+  jstNow.setMinutes(jstNow.getMinutes() < 30 ? 0 : 30);
+  const msUtc = jstNow.getTime() - JST_OFFSET_MS;
+  const dt = new Date(msUtc);
+  dt.setUTCSeconds(0, 0); // 秒・ミリ秒完全一致
+  return dt;
 }
 
 export async function POST(req) {
@@ -22,12 +26,9 @@ export async function POST(req) {
       return NextResponse.json({ message: 'パスワードが必要です' }, { status: 400 });
     }
 
-    // 現在の30分枠（UTC）
-    const when = currentUtcSlotStart();
+    const when = currentJstSlotStartAsUtc(); // ← JSTの現在枠 → UTC
 
-    // DBに保存されている予約を取得
     const row = await prisma.reservation.findUnique({ where: { time: when } });
-
     if (!row?.reserved) {
       return NextResponse.json({ message: '現在の時間帯に有効な予約がありません' }, { status: 400 });
     }
