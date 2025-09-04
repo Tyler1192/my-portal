@@ -6,15 +6,23 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // ---- ユーティリティ ----
-const toIsoMinute = (d) => new Date(d).toISOString().slice(0, 16); // "YYYY-MM-DDTHH:mm"
 const floorToMinute = (d) => { const x = new Date(d); x.setSeconds(0,0); x.setMilliseconds(0); return x; };
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+// UTC Date → 分精度のISO（Zなし / 例: "2025-09-05T03:30"）
+const toIsoMinuteUtcNoZ = (d) => new Date(d).toISOString().slice(0, 16);
+
+// UTC Date → JST表記の"YYYY-MM-DDTHH:mm"
+function toJstIsoMinute(d) {
+  const t = new Date(new Date(d).getTime() + JST_OFFSET_MS);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}T${pad(t.getHours())}:${pad(t.getMinutes())}`;
+}
 
 // "YYYY-MM-DDTHH:mm"（JST表記）→ UTCのDate（:00.000まで丸め）
 function jstMinuteStringToUtcDate(s) {
   if (!s) return new Date(NaN);
-  // 既にZが付くUTCならそのまま解釈（フォールバック）
-  if (s.endsWith('Z')) {
+  if (s.endsWith('Z')) { // 万一Z付きで来たらUTCとして解釈（互換フォールバック）
     const z = new Date(s);
     z.setUTCSeconds(0, 0);
     return z;
@@ -25,7 +33,7 @@ function jstMinuteStringToUtcDate(s) {
   const [h, m]   = t.split(':').map(Number);
   const msUtc = Date.UTC(Y, M - 1, D, h, m, 0, 0) - JST_OFFSET_MS; // JST→UTCシフト
   const dt = new Date(msUtc);
-  dt.setUTCSeconds(0, 0); // 秒・ミリ秒完全一致
+  dt.setUTCSeconds(0, 0);
   return dt;
 }
 
@@ -48,25 +56,26 @@ function generateSlots(days = 30) {
 
 // ---------------- GET: スロット一覧（DBとマージして返す） ----------------
 export async function GET() {
-  // 未来30日分の枠を作る
   const slots = generateSlots(30);
   const from = slots[0];
   const to = slots[slots.length - 1];
 
-  // 既存の予約をDBから取得（※パスワードは返さない！）
+  // 予約状況（パスワードは返さない）
   const rows = await prisma.reservation.findMany({
     where: { time: { gte: from, lte: to } },
     select: { time: true, reserved: true },
   });
 
-  const map = new Map(rows.map(r => [toIsoMinute(r.time), r]));
+  // DBはUTC Date。分精度のキー（UTC, no Z）でマップ
+  const map = new Map(rows.map(r => [toIsoMinuteUtcNoZ(r.time), r]));
 
-  // 返却形式（time は UTCの "YYYY-MM-DDTHH:mm"）
+  // 返却は JST表示用 と 参考のUTC文字列（no Z）を両方
   const data = slots.map(t => {
-    const key = toIsoMinute(t);
-    const hit = map.get(key);
+    const keyUtcNoZ = toIsoMinuteUtcNoZ(t); // 例: "2025-09-05T03:30"（内部キー）
+    const hit = map.get(keyUtcNoZ);
     return {
-      time: key,
+      timeJst: toJstIsoMinute(t),   // 例: "2025-09-05T12:30" ← 画面表示＆POST用
+      timeUtc: keyUtcNoZ,           // 例: "2025-09-05T03:30" ← 参考情報（使わなくてもOK）
       reserved: hit?.reserved ?? false,
     };
   });
@@ -82,13 +91,13 @@ export async function POST(req) {
       return NextResponse.json({ message: 'スロットが未指定です' }, { status: 400 });
     }
 
-    // JST文字列 → UTCDateに統一
+    // JST文字列 → UTC Date に統一
     const when = jstMinuteStringToUtcDate(slot);
     if (isNaN(when.getTime())) {
       return NextResponse.json({ message: '不正な時刻フォーマットです' }, { status: 400 });
     }
 
-    // 既に予約済みかチェック
+    // 既に予約済みかチェック（time は @unique 前提）
     const existing = await prisma.reservation.findUnique({ where: { time: when } });
     if (existing?.reserved) {
       return NextResponse.json({ message: 'この時間はすでに予約されています' }, { status: 400 });
@@ -97,14 +106,13 @@ export async function POST(req) {
     // パスワード生成（6〜8桁程度）
     const password = Math.random().toString(36).slice(-8);
 
-    // upsert で二重登録防止（time は unique 前提）
     await prisma.reservation.upsert({
       where: { time: when },
       update: { reserved: true, password },
       create: { time: when, reserved: true, password },
     });
 
-    // 予約直後のみ返す（GETでは絶対に返さない）
+    // 予約直後のみ返す（GETでは返さない）
     return NextResponse.json({ password });
   } catch (e) {
     console.error('reserve POST error:', e);
