@@ -5,24 +5,30 @@ import prisma from '../../../lib/prisma';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// ---- ユーティリティ ----
-const floorToMinute = (d) => { const x = new Date(d); x.setSeconds(0,0); x.setMilliseconds(0); return x; };
+// ---- Utils (全部ここで定義して未定義エラーを排除) ----
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
-// UTC Date → 分精度のISO（Zなし / 例: "2025-09-05T03:30"）
+const floorToMinute = (d) => {
+  const x = new Date(d);
+  x.setSeconds(0, 0);
+  x.setMilliseconds(0);
+  return x;
+};
+
+// UTC Date → "YYYY-MM-DDTHH:mm"（Zなし）※内部キー用
 const toIsoMinuteUtcNoZ = (d) => new Date(d).toISOString().slice(0, 16);
 
-// UTC Date → JST表記の"YYYY-MM-DDTHH:mm"
+// UTC Date → "YYYY-MM-DDTHH:mm"（JST表示用）
 function toJstIsoMinute(d) {
   const t = new Date(new Date(d).getTime() + JST_OFFSET_MS);
   const pad = (n) => String(n).padStart(2, '0');
-  return `${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}T${pad(t.getHours())}:${pad(t.getMinutes())}`;
+  return `${t.getFullYear()}-${pad(t.getMonth() + 1)}-${pad(t.getDate())}T${pad(t.getHours())}:${pad(t.getMinutes())}`;
 }
 
-// "YYYY-MM-DDTHH:mm"（JST表記）→ UTCのDate（:00.000まで丸め）
+// "YYYY-MM-DDTHH:mm"（JST表記）→ UTC Date（:00.000まで丸め）
 function jstMinuteStringToUtcDate(s) {
   if (!s) return new Date(NaN);
-  if (s.endsWith('Z')) { // 万一Z付きで来たらUTCとして解釈（互換フォールバック）
+  if (s.endsWith('Z')) { // 互換: Z付きならUTCとして受ける
     const z = new Date(s);
     z.setUTCSeconds(0, 0);
     return z;
@@ -30,14 +36,14 @@ function jstMinuteStringToUtcDate(s) {
   const [d, t] = s.split('T');
   if (!d || !t) return new Date(NaN);
   const [Y, M, D] = d.split('-').map(Number);
-  const [h, m]   = t.split(':').map(Number);
-  const msUtc = Date.UTC(Y, M - 1, D, h, m, 0, 0) - JST_OFFSET_MS; // JST→UTCシフト
+  const [h, m] = t.split(':').map(Number);
+  const msUtc = Date.UTC(Y, M - 1, D, h, m, 0, 0) - JST_OFFSET_MS; // JST→UTC
   const dt = new Date(msUtc);
   dt.setUTCSeconds(0, 0);
   return dt;
 }
 
-// 30日分（今から先）の30分刻みスロット（UTC基準）
+// 今から30日分の30分刻みスロット（UTC基準）
 function generateSlots(days = 30) {
   const now = floorToMinute(new Date());
   const slots = [];
@@ -56,32 +62,38 @@ function generateSlots(days = 30) {
 
 // ---------------- GET: スロット一覧（DBとマージして返す） ----------------
 export async function GET() {
-  const slots = generateSlots(30);
-  const from = slots[0];
-  const to = slots[slots.length - 1];
+  try {
+    const slots = generateSlots(30);
+    const from = slots[0];
+    const to = slots[slots.length - 1];
 
-  // 予約状況（パスワードは返さない）
-  const rows = await prisma.reservation.findMany({
-    where: { time: { gte: from, lte: to } },
-    select: { time: true, reserved: true },
-  });
+    // 予約状態（パスワードは返さない）
+    const rows = await prisma.reservation.findMany({
+      where: { time: { gte: from, lte: to } },
+      select: { time: true, reserved: true },
+    });
 
-  // DBはUTC Date。分精度のキー（UTC, no Z）でマップ
-  const map = new Map(rows.map(r => [toIsoMinuteUtcNoZ(r.time), r]));
+    // DBのUTC Dateを分精度キーに
+    const map = new Map(rows.map((r) => [toIsoMinuteUtcNoZ(r.time), r]));
 
-  // 返却は JST表示用 と 参考のUTC文字列（no Z）を両方
-  const data = slots.map(t => {
-    const keyUtcNoZ = toIsoMinuteUtcNoZ(t); // 例: "2025-09-05T03:30"（内部キー）
-    const hit = map.get(keyUtcNoZ);
-    return {
-      time: timeJst, 
-      timeJst: toJstIsoMinute(t),   // 例: "2025-09-05T12:30" ← 画面表示＆POST用
-      timeUtc: keyUtcNoZ,           // 例: "2025-09-05T03:30" ← 参考情報（使わなくてもOK）
-      reserved: hit?.reserved ?? false,
-    };
-  });
+    // 後方互換: time = JST文字列 / timeJst も同値 / timeUtc は参考
+    const data = slots.map((t) => {
+      const keyUtcNoZ = toIsoMinuteUtcNoZ(t);
+      const hit = map.get(keyUtcNoZ);
+      const timeJst = toJstIsoMinute(t);
+      return {
+        time: timeJst,          // 旧フロントが読むフィールド
+        timeJst,                // 明示的JST
+        timeUtc: keyUtcNoZ,     // 参考（開発用）
+        reserved: hit?.reserved ?? false,
+      };
+    });
 
-  return NextResponse.json(data);
+    return NextResponse.json(data);
+  } catch (e) {
+    console.error('reserve GET error:', e);
+    return NextResponse.json({ message: 'スロット取得中にエラーが発生しました' }, { status: 500 });
+  }
 }
 
 // ---------------- POST: 予約処理（該当スロットを予約済みに） ----------------
@@ -92,29 +104,27 @@ export async function POST(req) {
       return NextResponse.json({ message: 'スロットが未指定です' }, { status: 400 });
     }
 
-    // JST文字列 → UTC Date に統一
+    // JST→UTC Date
     const when = jstMinuteStringToUtcDate(slot);
     if (isNaN(when.getTime())) {
       return NextResponse.json({ message: '不正な時刻フォーマットです' }, { status: 400 });
     }
 
-    // 既に予約済みかチェック（time は @unique 前提）
+    // 既に予約済みか
     const existing = await prisma.reservation.findUnique({ where: { time: when } });
     if (existing?.reserved) {
       return NextResponse.json({ message: 'この時間はすでに予約されています' }, { status: 400 });
     }
 
-    // パスワード生成（6〜8桁程度）
     const password = Math.random().toString(36).slice(-8);
 
     await prisma.reservation.upsert({
-      where: { time: when },
+      where: { time: when }, // time は @unique 前提
       update: { reserved: true, password },
       create: { time: when, reserved: true, password },
     });
 
-    // 予約直後のみ返す（GETでは返さない）
-    return NextResponse.json({ password });
+    return NextResponse.json({ password }); // GETでは返さない
   } catch (e) {
     console.error('reserve POST error:', e);
     return NextResponse.json({ message: '予約処理中にエラーが発生しました' }, { status: 500 });
